@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"wyvern-server/internal/routes"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-	fmt.Println("Wyvern Server")
+	r := gin.Default()
+
+	routes.AddRoutes(r)
+
+	r.Run(":3000")
 }
