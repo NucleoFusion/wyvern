@@ -1,0 +1,43 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: wyvern-server
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_URL=redis:6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=wyvernrocks
+      - POSTGRES_DB=wyvern
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - REDIRECT_URI=${REDIRECT_URI}
+    depends_on:
+      - wyvern_redis
+      - wyvern_pg
+    restart: on-failure 
+
+  wyvern_redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  wyvern_pg:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wyvernrocks 
+      POSTGRES_DB: wyvern 
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+

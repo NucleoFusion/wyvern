@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"wyvern-server/internal/routes/auth"
 	"wyvern-server/internal/routes/rest"
 	"wyvern-server/internal/routes/ws"
 
@@ -10,4 +11,5 @@ import (
 func AddRoutes(r *gin.Engine) {
 	rest.AddRestRoutes(r)
 	ws.AddWsRoutes(r)
+	auth.AddAuthRoutes(r)
 }
