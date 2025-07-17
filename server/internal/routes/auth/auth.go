@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/lib/pq"
+	"github.com/redis/go-redis/v9"
 )
 
 type GithubResponse struct {
@@ -70,8 +71,6 @@ func AddAuthRoutes(r *gin.Engine) {
 		resp, _ := client.Do(req)
 		userData, _ := io.ReadAll(resp.Body)
 
-		fmt.Println("USERDATA: " + string(userData))
-		fmt.Println("ACCESS: " + accessToken)
 		// Parsing ID from Github Response
 		var githubResp GithubResponse
 		err = json.Unmarshal(userData, &githubResp)
@@ -107,7 +106,9 @@ func AddAuthRoutes(r *gin.Engine) {
 		uuidToken := "" // Will be used to check if already existed
 		if userExists {
 			val, err := app.Rdb.Get(context.Background(), fmt.Sprintf("gh:%d", githubResp.ID)).Result()
-			if err != nil {
+			if err == redis.Nil {
+				// Do nothing, so a new uuid will be created
+			} else if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			} else {
@@ -164,7 +165,7 @@ func AddAuthRoutes(r *gin.Engine) {
 		data, _ := json.Marshal(cookieData)
 
 		c.SetCookie("wyvern_session", string(data), 7*24*60*60, "/", "localhost", false, true) // TODO: change for hosting
-
+		fmt.Println(string(data))                                                              // TODO: ONLY FOR DEV, NOT IN PROD
 		c.Redirect(http.StatusPermanentRedirect, "http://localhost:5173/home")
 	})
 }

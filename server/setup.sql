@@ -3,3 +3,15 @@ CREATE TABLE users (
     github_id TEXT UNIQUE NOT NULL
 );
 
+CREATE TABLE hub (
+    id SERIAL PRIMARY KEY,
+    repo TEXT NOT NULL,
+    owner_id INTEGER NOT NULL
+);
+
+CREATE TABLE channel (
+    id SERIAL PRIMARY KEY,
+    hub_id INTEGER NOT NULL REFERENCES hub(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    private BOOLEAN NOT NULL DEFAULT FALSE
+);
