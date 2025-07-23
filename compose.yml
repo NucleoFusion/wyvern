@@ -7,8 +7,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - REDIS_URL=redis:6379
-      - POSTGRES_HOST=postgres
+      - REDIS_URL=wyvern_redis:6379
+      - POSTGRES_HOST=wyvern_pg
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=wyvernrocks
       - POSTGRES_DB=wyvern
@@ -18,17 +18,18 @@ services:
     depends_on:
       - wyvern_redis
       - wyvern_pg
+      - wyvern_mongo
     restart: on-failure 
 
   wyvern_redis:
     image: redis:7
-    container_name: redis
+    container_name: wyvern_redis 
     ports:
       - "6379:6379"
 
   wyvern_pg:
     image: postgres:16
-    container_name: postgres
+    container_name: wyvern_pg 
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: wyvernrocks 
@@ -38,6 +39,18 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  wyvern_mongo:
+    image: mongo:7.0
+    container_name: wyvern_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password 
+
 volumes:
   pgdata:
+  mongo_data:
 

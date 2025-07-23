@@ -7,6 +7,7 @@ import (
 )
 
 type AppContext struct {
-	Pg  *sql.DB
-	Rdb *redis.Client
+	Pg    *sql.DB
+	Rdb   *redis.Client
+	Mongo *Mongo
 }

@@ -1,5 +1,12 @@
 package models
 
+import (
+	"time"
+
+	"github.com/gorilla/websocket"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type Hub struct {
 	ID      int    `json:"id" db:"id"`
 	Repo    string `json:"repo" db:"repo"`
@@ -14,9 +21,16 @@ type Channel struct {
 }
 
 type Message struct {
-	ID        int    `json:"id"`
-	HubID     int    `json:"hub_id"`
-	UserID    int    `json:"user_id"`
-	Content   string `json:"content"`
-	Timestamp int64  `json:"timestamp"`
+	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	ChannelID int                `json:"channel_id" bson:"channel_id"`
+	UserID    int                `json:"user_id" bson:"user_id"`
+	Content   string             `json:"content" bson:"content"`
+	Timestamp time.Time          `json:"timestamp" bson:"timestamp"`
+}
+
+type Client struct {
+	Conn      *websocket.Conn
+	Send      chan []byte
+	UserID    int
+	ChannelID int // References ChannelID
 }

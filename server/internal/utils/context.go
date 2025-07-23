@@ -2,7 +2,11 @@ package utils
 
 import (
 	"errors"
+	"log"
 
+	"wyvern-server/internal/db/mongodb"
+	"wyvern-server/internal/db/pg"
+	redisdb "wyvern-server/internal/db/redis"
 	"wyvern-server/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -33,4 +37,26 @@ func GetSessionContext(c *gin.Context) (*models.UserCookie, string, error) {
 	token := val2.(string)
 
 	return session, token, nil
+}
+
+func CreateContext() *models.AppContext {
+	pg, err := pg.ConnectPG()
+	if err != nil {
+		log.Fatal("Postgres Error:", err)
+	}
+	defer pg.Close()
+
+	rdb := redisdb.ConnectRedis()
+	defer rdb.Close()
+
+	mongo, err := mongodb.ConnectMongo()
+	if err != nil {
+		log.Fatal("Postgres Error:", err)
+	}
+
+	return &models.AppContext{
+		Pg:    pg,
+		Rdb:   rdb,
+		Mongo: mongo,
+	}
 }
