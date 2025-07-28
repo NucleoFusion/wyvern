@@ -1,31 +1,13 @@
-package hub
+package channel
 
 import (
 	"wyvern-server/internal/log"
 	"wyvern-server/internal/models"
 )
 
-func (m *HubManager) Run(msgChan *chan HubMessage) {
+func (m *ChannelManager) Run(msgChan *chan ChannelMessage) {
 	for msg := range *msgChan {
 		switch msg.MsgType {
-		case AddHub:
-			v := msg.Param
-			prm, ok := v.(*models.Hub)
-			if !ok {
-				log.Log(log.Moderate, "Invalid Type for Params - AddHub (HubManager)")
-				continue
-			}
-
-			go m.AddHub(prm)
-		case RemoveHub:
-			v := msg.Param
-			prm, ok := v.(*models.Hub)
-			if !ok {
-				log.Log(log.Moderate, "Invalid Type for Params - RemoveHub (HubManager)")
-				continue
-			}
-
-			go m.RemoveHub(prm)
 		case AddChannel:
 			v := msg.Param
 			prm, ok := v.(*models.Channel)

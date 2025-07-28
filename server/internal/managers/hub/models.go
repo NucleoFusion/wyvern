@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"database/sql"
 	"sync"
 
 	"wyvern-server/internal/managers/channel"
@@ -10,9 +11,7 @@ import (
 type HubMsgType int
 
 const (
-	AddClient HubMsgType = iota
-	RemoveClient
-	AddHub
+	AddHub HubMsgType = iota
 	RemoveHub
 	AddChannel
 	RemoveChannel
@@ -30,8 +29,15 @@ type HubInstance struct {
 type HubManager struct {
 	Hubs map[int]*HubInstance // hubID -> HubInstance
 	mu   sync.RWMutex
+	Pg   *sql.DB
 }
 
 type HubMessage struct {
 	MsgType HubMsgType
+	Param   any
+}
+
+type HubClient struct {
+	HubID    int
+	ClientID int
 }
