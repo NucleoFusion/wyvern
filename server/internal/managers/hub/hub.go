@@ -3,9 +3,9 @@ package hub
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"sync"
 
+	"wyvern-server/internal/log"
 	"wyvern-server/internal/managers/channel"
 	"wyvern-server/internal/models"
 )
@@ -15,7 +15,7 @@ func NewHubManager(pg *sql.DB) *HubManager {
 	fmt.Println("[Managers] Creating Hub Manager....")
 	res, err := pg.Query("SELECT id, repo, owner_id FROM hub")
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Log(log.Fatal, err.Error())
 	}
 
 	items := make(map[int]*HubInstance, 0)
@@ -23,7 +23,7 @@ func NewHubManager(pg *sql.DB) *HubManager {
 		var hub models.Hub
 		err := res.Scan(&hub.ID, &hub.Repo, &hub.OwnerID)
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Log(log.Fatal, err.Error())
 		}
 
 		items[hub.ID] = HubToInstance(pg, &hub)
@@ -33,6 +33,7 @@ func NewHubManager(pg *sql.DB) *HubManager {
 
 	return &HubManager{
 		Hubs: items,
+		Pg:   pg,
 		mu:   sync.RWMutex{},
 	}
 }
@@ -41,7 +42,7 @@ func NewHubManager(pg *sql.DB) *HubManager {
 func HubToInstance(pg *sql.DB, hub *models.Hub) *HubInstance {
 	res, err := pg.Query("SELECT id, name, private FROM channel WHERE hub_id = $1", hub.ID)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Log(log.Fatal, err.Error())
 	}
 
 	items := make(map[int]*channel.ChannelInstance, 0)
@@ -49,7 +50,7 @@ func HubToInstance(pg *sql.DB, hub *models.Hub) *HubInstance {
 		var ch models.Channel
 		err := res.Scan(&ch.ID, &ch.Name, &ch.Private)
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Log(log.Fatal, err.Error())
 		}
 		ch.HubID = hub.ID
 

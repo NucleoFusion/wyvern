@@ -54,10 +54,8 @@ func CreateContext() *AppContext {
 	if err != nil {
 		log.Fatal("Postgres Error:", err)
 	}
-	defer pg.Close()
 
 	rdb := redisdb.ConnectRedis()
-	defer rdb.Close()
 
 	mongo, err := mongodb.ConnectMongo()
 	if err != nil {

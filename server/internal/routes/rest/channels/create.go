@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"wyvern-server/internal/managers/channel"
 	"wyvern-server/internal/models"
 	"wyvern-server/internal/utils"
 
@@ -64,6 +65,11 @@ func CreateChannel(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	app.Managers.ChanChan <- &channel.ChannelMessage{
+		MsgType: channel.AddChannel,
+		Param:   &chanRow,
 	}
 
 	c.JSON(http.StatusCreated, chanRow)

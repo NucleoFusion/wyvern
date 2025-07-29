@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"wyvern-server/internal/managers/hub"
 	"wyvern-server/internal/models"
 	"wyvern-server/internal/utils"
 
@@ -66,6 +67,11 @@ func CreateHub(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	app.Managers.HubChan <- &hub.HubMessage{
+		MsgType: hub.AddHub,
+		Param:   &hubRow,
 	}
 
 	c.JSON(http.StatusCreated, hubRow)
