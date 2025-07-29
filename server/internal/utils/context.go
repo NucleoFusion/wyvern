@@ -1,23 +1,33 @@
 package utils
 
 import (
+	"database/sql"
 	"errors"
 	"log"
 
 	"wyvern-server/internal/db/mongodb"
 	"wyvern-server/internal/db/pg"
 	redisdb "wyvern-server/internal/db/redis"
+	"wyvern-server/internal/managers"
 	"wyvern-server/internal/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 )
 
-func GetContext(c *gin.Context) (*models.AppContext, error) {
+type AppContext struct {
+	Pg       *sql.DB
+	Rdb      *redis.Client
+	Mongo    *models.Mongo
+	Managers *managers.Managers
+}
+
+func GetContext(c *gin.Context) (*AppContext, error) {
 	val, ok := c.Get("app")
 	if !ok {
-		return &models.AppContext{}, errors.New("could not access app context")
+		return &AppContext{}, errors.New("could not access app context")
 	}
-	app := val.(*models.AppContext)
+	app := val.(*AppContext)
 
 	return app, nil
 }
@@ -39,7 +49,7 @@ func GetSessionContext(c *gin.Context) (*models.UserCookie, string, error) {
 	return session, token, nil
 }
 
-func CreateContext() *models.AppContext {
+func CreateContext() *AppContext {
 	pg, err := pg.ConnectPG()
 	if err != nil {
 		log.Fatal("Postgres Error:", err)
@@ -54,9 +64,10 @@ func CreateContext() *models.AppContext {
 		log.Fatal("Postgres Error:", err)
 	}
 
-	return &models.AppContext{
-		Pg:    pg,
-		Rdb:   rdb,
-		Mongo: mongo,
+	return &AppContext{
+		Pg:       pg,
+		Rdb:      rdb,
+		Mongo:    mongo,
+		Managers: managers.GetManagers(pg),
 	}
 }

@@ -2,6 +2,7 @@ package hub
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"sync"
 
@@ -11,6 +12,7 @@ import (
 
 // Finds all Hub Entries in DB and adds them to manager
 func NewHubManager(pg *sql.DB) *HubManager {
+	fmt.Println("[Managers] Creating Hub Manager....")
 	res, err := pg.Query("SELECT id, repo, owner_id FROM hub")
 	if err != nil {
 		log.Fatal(err.Error())
@@ -26,6 +28,8 @@ func NewHubManager(pg *sql.DB) *HubManager {
 
 		items[hub.ID] = HubToInstance(pg, &hub)
 	}
+
+	fmt.Printf("[Managers] Successfully Created Hub Manager w/ Entries: %d\n", len(items))
 
 	return &HubManager{
 		Hubs: items,

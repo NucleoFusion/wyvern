@@ -5,14 +5,14 @@ import (
 	"wyvern-server/internal/models"
 )
 
-func (m *ChannelManager) Run(msgChan *chan ChannelMessage) {
-	for msg := range *msgChan {
+func (m *ChannelManager) Run(msgChan chan *ChannelMessage) {
+	for msg := range msgChan {
 		switch msg.MsgType {
 		case AddChannel:
 			v := msg.Param
 			prm, ok := v.(*models.Channel)
 			if !ok {
-				log.Log(log.Moderate, "Invalid Type for Params - AddChannel (HubManager)")
+				log.Log(log.Moderate, "Invalid Type for Params - AddChannel (ChannelManager)")
 				continue
 			}
 
@@ -21,7 +21,7 @@ func (m *ChannelManager) Run(msgChan *chan ChannelMessage) {
 			v := msg.Param
 			prm, ok := v.(*models.Channel)
 			if !ok {
-				log.Log(log.Moderate, "Invalid Type for Params - RemoveChannel (HubManager)")
+				log.Log(log.Moderate, "Invalid Type for Params - RemoveChannel (ChannelManager)")
 				continue
 			}
 
