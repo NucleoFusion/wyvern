@@ -44,6 +44,24 @@ func (m *HubManager) Run(msgChan chan *HubMessage) {
 			}
 
 			go m.RemoveChannel(prm)
+		case RegisterClient:
+			v := msg.Param
+			prm, ok := v.(*models.Client)
+			if !ok {
+				log.Log(log.Moderate, "Invalid Type for Params - RegisterClient (HubManager)")
+				continue
+			}
+
+			go m.RegisterClient(prm)
+		case UnregisterClient:
+			v := msg.Param
+			prm, ok := v.(*models.Client)
+			if !ok {
+				log.Log(log.Moderate, "Invalid Type for Params - UnregisterClient (HubManager)")
+				continue
+			}
+
+			go m.UnregisterClient(prm)
 		}
 	}
 }

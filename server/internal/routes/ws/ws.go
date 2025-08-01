@@ -1,11 +1,18 @@
 package ws
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+)
+
+var Upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool { return true },
+}
 
 func AddWsRoutes(r *gin.Engine) {
 	grp := r.Group("/ws")
 
-	grp.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "PONG"})
-	})
+	grp.GET("/connect/:hubID", Connect)
 }

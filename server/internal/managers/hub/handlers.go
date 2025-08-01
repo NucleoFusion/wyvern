@@ -37,3 +37,21 @@ func (m *HubManager) RemoveChannel(h *models.Channel) {
 	delete(m.Hubs[h.HubID].Channels, h.ID)
 	m.mu.Unlock()
 }
+
+func (m *HubManager) RegisterClient(h *models.Client) {
+	fmt.Printf("[HubManager] RegisterClient Called for Hub ID: %d\n", h.HubID)
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.Hubs[h.HubID].OnlineClients[h] = true
+}
+
+func (m *HubManager) UnregisterClient(h *models.Client) {
+	fmt.Printf("[HubManager] UnregisterClient Called for Hub ID: %d\n", h.HubID)
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	delete(m.Hubs[h.HubID].OnlineClients, h)
+}

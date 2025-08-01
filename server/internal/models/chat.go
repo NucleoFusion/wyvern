@@ -29,8 +29,8 @@ type Message struct {
 }
 
 type Client struct {
-	Conn      *websocket.Conn
-	Send      chan []byte
-	UserID    int
-	ChannelID int // References ChannelID
+	Conn   *websocket.Conn
+	Send   chan []byte
+	UserID int
+	HubID  int // References ChannelID
 }

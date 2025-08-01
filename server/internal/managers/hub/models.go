@@ -15,6 +15,8 @@ const (
 	RemoveHub
 	AddChannel
 	RemoveChannel
+	RegisterClient
+	UnregisterClient
 )
 
 type HubInstance struct {
