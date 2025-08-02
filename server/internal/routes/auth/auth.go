@@ -10,8 +10,8 @@ import (
 	"os"
 	"time"
 
+	"wyvern-server/internal/dbctx"
 	"wyvern-server/internal/models"
-	"wyvern-server/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -38,11 +38,7 @@ func AddAuthRoutes(r *gin.Engine) {
 
 	r.GET("/auth/callback", func(c *gin.Context) {
 		// Getting Context
-		app, err := utils.GetContext(c)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		app := dbctx.GetCtx()
 
 		// Getting Vars
 		code := c.Query("code")
@@ -73,7 +69,7 @@ func AddAuthRoutes(r *gin.Engine) {
 
 		// Parsing ID from Github Response
 		var githubResp GithubResponse
-		err = json.Unmarshal(userData, &githubResp)
+		err := json.Unmarshal(userData, &githubResp)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"wyvern-server/internal/dbctx"
+	"wyvern-server/internal/dbctx/mgrctx"
 	"wyvern-server/internal/managers/hub"
 	"wyvern-server/internal/models"
 	"wyvern-server/internal/utils"
@@ -16,11 +18,7 @@ import (
 
 func CreateHub(c *gin.Context) {
 	// Getting Contexts
-	app, err := utils.GetContext(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	app := dbctx.GetCtx()
 
 	_, token, err := utils.GetSessionContext(c)
 	if err != nil {
@@ -69,7 +67,7 @@ func CreateHub(c *gin.Context) {
 		return
 	}
 
-	app.Managers.HubChan <- &hub.HubMessage{
+	mgrctx.GetCtx().HubChan <- &hub.HubMessage{
 		MsgType: hub.AddHub,
 		Param:   &hubRow,
 	}

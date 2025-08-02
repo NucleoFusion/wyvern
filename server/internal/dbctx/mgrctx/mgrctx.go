@@ -1,4 +1,4 @@
-package managers
+package mgrctx
 
 import (
 	"database/sql"
@@ -8,14 +8,20 @@ import (
 	"wyvern-server/internal/managers/hub"
 )
 
-type Managers struct {
+var ctx *MgrCtx
+
+type MgrCtx struct {
 	HubMgr   *hub.HubManager
 	HubChan  chan *hub.HubMessage
 	ChanMgr  *channel.ChannelManager
 	ChanChan chan *channel.ChannelMessage
 }
 
-func GetManagers(pg *sql.DB) *Managers {
+func GetCtx() *MgrCtx {
+	return ctx
+}
+
+func SetCtx(pg *sql.DB) {
 	fmt.Println("[Managers] Creating Managers....")
 	hubChan := make(chan *hub.HubMessage)
 	chanChan := make(chan *channel.ChannelMessage)
@@ -31,7 +37,7 @@ func GetManagers(pg *sql.DB) *Managers {
 	go cm.Run(chanChan)
 	fmt.Println("[Managers] Succesfully Ran Manager Routines")
 
-	return &Managers{
+	ctx = &MgrCtx{
 		HubMgr:   hm,
 		HubChan:  hubChan,
 		ChanMgr:  cm,

@@ -66,3 +66,8 @@ func HubToInstance(pg *sql.DB, hub *models.Hub) *HubInstance {
 		mu:            sync.Mutex{},
 	}
 }
+
+// Write to DB, broadcast to all clients
+func (h *HubInstance) IncomingMessage(msg *models.Message) {
+	fmt.Println(msg.Content)
+}

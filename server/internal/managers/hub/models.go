@@ -17,6 +17,7 @@ const (
 	RemoveChannel
 	RegisterClient
 	UnregisterClient
+	IncomingMsg
 )
 
 type HubInstance struct {

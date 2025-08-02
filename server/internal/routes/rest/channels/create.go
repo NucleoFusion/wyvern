@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"wyvern-server/internal/dbctx"
+	"wyvern-server/internal/dbctx/mgrctx"
 	"wyvern-server/internal/managers/channel"
 	"wyvern-server/internal/models"
 	"wyvern-server/internal/utils"
@@ -14,11 +16,7 @@ import (
 
 func CreateChannel(c *gin.Context) {
 	// Getting Contexts
-	app, err := utils.GetContext(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	app := dbctx.GetCtx()
 
 	sess, _, err := utils.GetSessionContext(c)
 	if err != nil {
@@ -67,7 +65,7 @@ func CreateChannel(c *gin.Context) {
 		return
 	}
 
-	app.Managers.ChanChan <- &channel.ChannelMessage{
+	mgrctx.GetCtx().ChanChan <- &channel.ChannelMessage{
 		MsgType: channel.AddChannel,
 		Param:   &chanRow,
 	}

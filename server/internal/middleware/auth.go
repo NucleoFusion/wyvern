@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"wyvern-server/internal/dbctx"
 	"wyvern-server/internal/models"
-	"wyvern-server/internal/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,12 +15,7 @@ func ParseAuth(c *gin.Context) {
 	// TODO: Add any paths that do not require this here (if condns)
 
 	// Getting Context
-	app, err := utils.GetContext(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		c.Abort()
-		return
-	}
+	app := dbctx.GetCtx()
 
 	// Handling no uuid
 	session := c.Query("session")
@@ -32,7 +27,7 @@ func ParseAuth(c *gin.Context) {
 
 	// Parsing Cookie
 	var cookieData models.UserCookie
-	if err = json.Unmarshal([]byte(session), &cookieData); err != nil {
+	if err := json.Unmarshal([]byte(session), &cookieData); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid/dirty session data"})
 		c.Abort()
 		return

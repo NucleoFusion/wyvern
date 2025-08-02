@@ -1,8 +1,11 @@
 package hub
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 
+	"wyvern-server/internal/dbctx"
 	"wyvern-server/internal/managers/channel"
 	"wyvern-server/internal/models"
 )
@@ -54,4 +57,21 @@ func (m *HubManager) UnregisterClient(h *models.Client) {
 	defer m.mu.Unlock()
 
 	delete(m.Hubs[h.HubID].OnlineClients, h)
+}
+
+func (m *HubManager) HandleIncomingMsg(h *models.Message) {
+	fmt.Printf("[HubManager] UnregisterClient Called for Hub ID: %d\n", h.HubID)
+
+	coll := dbctx.GetCtx().Mongo.Database.Collection("messages")
+
+	coll.InsertOne(context.Background(), h)
+
+	data, _ := json.Marshal(h)
+
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	for client := range m.Hubs[h.HubID].OnlineClients {
+		client.Send <- data
+	}
 }

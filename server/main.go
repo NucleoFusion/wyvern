@@ -1,18 +1,20 @@
 package main
 
 import (
-	"wyvern-server/internal/middleware"
+	"wyvern-server/internal/dbctx"
+	"wyvern-server/internal/dbctx/mgrctx"
 	"wyvern-server/internal/routes"
-	"wyvern-server/internal/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	ctx := utils.CreateContext()
+	dbctx.SetCtx()
+	mgrctx.SetCtx(dbctx.GetCtx().Pg)
+
 	r := gin.Default()
 
-	r.Use(middleware.Inject(ctx)) // Injecting AppContext
+	// r.Use(middleware.Inject(ctx)) // Injecting AppContext
 	routes.AddRoutes(r)
 
 	r.Run(":3000")
