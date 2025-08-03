@@ -62,6 +62,15 @@ func (m *HubManager) Run(msgChan chan *HubMessage) {
 			}
 
 			go m.UnregisterClient(prm)
+		case IncomingMsg:
+			v := msg.Param
+			prm, ok := v.(*models.Message)
+			if !ok {
+				log.Log(log.Moderate, "Invalid Type for Params - IncomingMsg (HubManager)")
+				continue
+			}
+
+			go m.HandleIncomingMsg(prm)
 		}
 	}
 }

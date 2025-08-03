@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"wyvern-server/internal/dbctx"
+	"wyvern-server/internal/log"
 	"wyvern-server/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -106,6 +107,7 @@ func AddAuthRoutes(r *gin.Engine) {
 				// Do nothing, so a new uuid will be created
 			} else if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Log(log.Fatal, err.Error())
 				return
 			} else {
 				uuidToken = val
@@ -117,8 +119,21 @@ func AddAuthRoutes(r *gin.Engine) {
 			err := app.Rdb.Set(context.Background(), "sess:"+uuidToken, accessToken, 24*5*time.Hour).Err()
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Log(log.Fatal, err.Error())
 				return
 			}
+
+			// Setting Cookie
+			cookieData := models.UserCookie{
+				UUID:     uuidToken,
+				UserID:   userID,
+				GithubID: githubResp.ID,
+			}
+			data, _ := json.Marshal(cookieData)
+
+			c.SetCookie("wyvern_session", string(data), 7*24*60*60, "/", "localhost", false, true) // TODO: change for hosting
+
+			fmt.Println(string(data))
 
 			c.Redirect(http.StatusPermanentRedirect, "http://localhost:5173/home")
 			return
@@ -132,6 +147,7 @@ func AddAuthRoutes(r *gin.Engine) {
 			exists, err := app.Rdb.Exists(context.Background(), "sess:"+uuidStr).Result()
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Log(log.Fatal, err.Error())
 				return
 			}
 
@@ -144,11 +160,13 @@ func AddAuthRoutes(r *gin.Engine) {
 		err = app.Rdb.Set(context.Background(), "sess:"+uuidStr, accessToken, 24*5*time.Hour).Err()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			log.Log(log.Fatal, err.Error())
 			return
 		}
 		err = app.Rdb.Set(context.Background(), fmt.Sprintf("gh:%d", githubResp.ID), uuidStr, 24*5*time.Hour).Err()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			log.Log(log.Fatal, err.Error())
 			return
 		}
 
@@ -162,6 +180,6 @@ func AddAuthRoutes(r *gin.Engine) {
 
 		c.SetCookie("wyvern_session", string(data), 7*24*60*60, "/", "localhost", false, true) // TODO: change for hosting
 		fmt.Println(string(data))                                                              // TODO: ONLY FOR DEV, NOT IN PROD
-		c.Redirect(http.StatusPermanentRedirect, "http://localhost:5173/home")
+		// c.Redirect(http.StatusPermanentRedirect, "http://localhost:5173/home")
 	})
 }

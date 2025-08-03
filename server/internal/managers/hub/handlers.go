@@ -59,8 +59,9 @@ func (m *HubManager) UnregisterClient(h *models.Client) {
 	delete(m.Hubs[h.HubID].OnlineClients, h)
 }
 
+// Handle UserID no match
 func (m *HubManager) HandleIncomingMsg(h *models.Message) {
-	fmt.Printf("[HubManager] UnregisterClient Called for Hub ID: %d\n", h.HubID)
+	fmt.Printf("[HubManager] Incoming Message from User ID: %d\n", h.UserID)
 
 	coll := dbctx.GetCtx().Mongo.Database.Collection("messages")
 

@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO: Handle Edge Cases
 func Connect(c *gin.Context) {
 	hubIDStr := c.Param("hubID")
 	userIDStr := c.Query("userID")
@@ -39,6 +40,7 @@ func Connect(c *gin.Context) {
 		Conn:   conn,
 		HubID:  int(hubID),
 		UserID: int(userID),
+		Send:   make(chan []byte),
 	}
 
 	mgrctx.GetCtx().HubChan <- &hub.HubMessage{
@@ -47,4 +49,5 @@ func Connect(c *gin.Context) {
 	}
 
 	go handlers.HandleClientReads(&client)
+	go handlers.HandleClientWrites(&client)
 }

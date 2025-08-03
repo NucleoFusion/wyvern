@@ -22,11 +22,11 @@ type Channel struct {
 
 type Message struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	ChannelID int
-	HubID     int       `json:"channel_id" bson:"channel_id"`
-	UserID    int       `json:"user_id" bson:"user_id"`
-	Content   string    `json:"content" bson:"content"`
-	Timestamp time.Time `json:"timestamp" bson:"timestamp"`
+	HubID     int                `json:"hub_id" bson:"hub_id"`
+	ChannelID int                `json:"channel_id" bson:"channel_id"`
+	UserID    int                `json:"user_id" bson:"user_id"`
+	Content   string             `json:"content" bson:"content"`
+	Timestamp time.Time          `json:"timestamp" bson:"timestamp"`
 }
 
 type Client struct {

@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetContext(c *gin.Context) (*AppContext, error) {
-	val, ok := c.Get("app")
-	if !ok {
-		return &AppContext{}, errors.New("could not access app context")
-	}
-	app := val.(*AppContext)
-
-	return app, nil
-}
+// func GetContext(c *gin.Context) (*AppContext, error) {
+// 	val, ok := c.Get("app")
+// 	if !ok {
+// 		return &AppContext{}, errors.New("could not access app context")
+// 	}
+// 	app := val.(*AppContext)
+//
+// 	return app, nil
+// }
 
 func GetSessionContext(c *gin.Context) (*models.UserCookie, string, error) {
 	val, ok := c.Get("session")
