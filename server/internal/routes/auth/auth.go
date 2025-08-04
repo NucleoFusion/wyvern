@@ -180,6 +180,6 @@ func AddAuthRoutes(r *gin.Engine) {
 
 		c.SetCookie("wyvern_session", string(data), 7*24*60*60, "/", "localhost", false, true) // TODO: change for hosting
 		fmt.Println(string(data))                                                              // TODO: ONLY FOR DEV, NOT IN PROD
-		// c.Redirect(http.StatusPermanentRedirect, "http://localhost:5173/home")
+		c.Redirect(http.StatusPermanentRedirect, "http://localhost:5173/home")
 	})
 }
